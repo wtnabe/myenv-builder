@@ -1,0 +1,64 @@
+myenv-builder
+=============
+
+generate and deploy your configuration files like dot files, firefox user.js, etc.
+
+I'm using it on FreeBSD, Linux, and MacOSX.
+
+REQUIRE
+-------
+
+* Ruby
+* Rake
+* Symbolic link available filesystem
+
+GETTING STARTED
+---------------
+
+basic layout
+
+myenv-builder
+|-- README
+|-- Rakefile
+|-- dotfiles/   your dot files
+|-- firefox/    your profile settings
+`-- lib/        Rakefile's libraries
+
+$ cd myenv-builder
+$ mv ~/.zshrc dotfiles/zshrc
+$ rake dotfiles:link_priv
+$ ls -l ~/
+
+ .zshrc -> dotfiles/zshrc
+
+WHAT CAN YOU DO WITH THIS
+-------------------------
+
+1. versioning your config files
+2. reuse the same config files in multiple environments
+3. switch to set up config files for job or private with erb
+
+ERB EXAMPLE
+-----------
+
+gitconfig.erb
+
+[user]
+<%- if workspace == 'job' -%>
+    name  = wtnabe
+    email = wtnabe@example.co.jp
+<%- else -%>
+    name  = wtnabe
+    email = 18510+wtnabe@users.noreply.github.com
+<%- end -%>
+[alias]
+    stat = status
+    ci   = commit -a
+    br   = branch
+    co   = checkout
+    up   = update
+[color]
+    status = auto
+    diff   = auto
+[core]
+    excludesfile = <%= ENV['HOME'] %>/.gitignore
