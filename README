@@ -31,8 +31,8 @@ $ ls -l ~/
 
  .zshrc -> dotfiles/zshrc
 
-WHAT CAN YOU DO WITH THIS
--------------------------
+WHAT YOU CAN
+------------
 
 1. versioning your config files
 2. reuse the same config files in multiple environments
