@@ -2,6 +2,7 @@
 
 require 'singleton'
 require 'pathname'
+require 'fileutils'
 
 class LinkUtils
   include Singleton
@@ -52,5 +53,25 @@ class LinkUtils
   #
   def erbed_filename( file )
     return file.sub( /\.erb\z/, '' )
+  end
+
+  #
+  # [Param] String src
+  # [Param] String dest
+  #
+  def link( src, dest )
+    if ( win? )
+      FileUtils.cp_r( src, dest )
+    else
+      File.symlink( src, dest )
+    end
+  end
+
+  #
+  # [Return] boolean
+  #
+  def win?
+    # Cygwin supports symlink
+    return /mswin|mingw|bccwin/ =~ RUBY_PLATFORM
   end
 end

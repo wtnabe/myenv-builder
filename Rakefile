@@ -34,7 +34,11 @@ namespaces.each { |n|
     task :clean do
       utils.files_for_link.each { |e|
         path = utils.dest_path( e )
-        File.unlink( path ) if File.symlink?( path )
+        if File.symlink?( path )
+          File.unlink( path )
+        else
+          FileUtils.rm_rf( path )
+        end
       }
       utils.files_post_erbed.each { |e|
         File.unlink( e ) if File.exist?( e )
@@ -46,7 +50,7 @@ namespaces.each { |n|
       desc "enable config files by symbolic link for #{workspace}"
       task "link_#{workspace}" => [:clean, "generate_#{workspace}", :check] do
         utils.files_for_link.each { |e|
-          File.symlink( utils.src_path( e ), utils.dest_path( e ) )
+          utils.link( utils.src_path( e ), utils.dest_path( e ) )
         }
         puts "Symlinks created."
       end
