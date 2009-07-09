@@ -3,14 +3,13 @@ myenv-builder
 
 generate and deploy your configuration files like dot files, firefox user.js, etc.
 
-I'm using it on FreeBSD, Linux, and MacOSX.
+I'm using it on FreeBSD, Linux, Windows and MacOSX
 
 REQUIRE
 -------
 
 * Ruby
 * Rake
-* Symbolic link available filesystem
 
 GETTING STARTED
 ---------------

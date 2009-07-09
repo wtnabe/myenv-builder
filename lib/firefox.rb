@@ -26,6 +26,9 @@ class Firefox < LinkUtils
   end
 
   def dest_path( file )
-    return File.join( ENV['PWD'], file )
+    if ( !@cwd )
+      @cwd = ENV['PWD'] || `cd`.chomp
+    end
+    return File.join( @cwd, file )
   end
 end
