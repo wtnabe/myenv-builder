@@ -99,3 +99,21 @@ namespaces.each { |n|
 
   end # of namespace
 }
+
+namespace :bin do
+  desc 'create link for ~/bin'
+  task :link do
+    File.symlink( File.join( File.dirname( __FILE__ ), 'bin' ),
+                  File.join( ENV['HOME'], 'bin' ) )
+  end
+end
+
+namespace :elisp do
+  ELISP = File.expand_path( File.dirname( __FILE__ ) + '/dotfiles/elisp' )
+
+  desc "byte-compile-directory"
+  task :bytecompile do
+    exec "emacs --batch -L #{ELISP} -f batch-byte-compile #{ELISP}/*.el > /dev/null 2>&1"
+  end
+
+end
