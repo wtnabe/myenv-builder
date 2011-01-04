@@ -5,6 +5,24 @@ require 'erb'
 require File.dirname( __FILE__ ) + '/lib/dotfiles'
 require File.dirname( __FILE__ ) + '/lib/firefox'
 
+def win?
+  RUBY_PLATFORM !~ /darwin/i and RUBY_PLATFORM =~ /(win|mingw)/i
+end
+
+def which( cmd )
+  suffixes = %w(bat com exe)
+
+  ENV['PATH'].split( File::PATH_SEPARATOR ).any? { |path|
+    if win?
+      suffixes.each { |s|
+        File.exist?( path + File::SEPARATOR + cmd + '.' + s )
+      }
+    else
+      File.exist?( path + File::SEPARATOR + cmd )
+    end
+  }
+end
+
 def workspaces
   return %w(job priv)
 end
@@ -115,5 +133,4 @@ namespace :elisp do
   task :bytecompile do
     exec "emacs --batch -L #{ELISP} -f batch-byte-compile #{ELISP}/*.el > /dev/null 2>&1"
   end
-
 end
