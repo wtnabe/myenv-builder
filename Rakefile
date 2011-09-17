@@ -33,9 +33,7 @@ end
 
 task :default do
   puts "tasks below:"
-  app = Rake.application
-  app.options.show_task_pattern = Regexp.new('')
-  app.display_tasks_and_comments
+  sh 'rake -T', :verbose => false
 
   puts <<EOD
 
