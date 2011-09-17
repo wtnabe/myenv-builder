@@ -131,4 +131,68 @@ namespace :elisp do
   task :bytecompile do
     exec "emacs --batch -L #{ELISP} -f batch-byte-compile #{ELISP}/*.el > /dev/null 2>&1"
   end
+
+  if which( 'rails' )
+    namespace :rinari do
+      if ( File.exist?( "#{ELISP}/rinari/.git" ) )
+        desc 'update Rinari'
+        task :update do
+          exec <<EOD
+cd #{ELISP}/rinari
+git pull
+git submodule update
+if [ -e util/inf-ruby.el ]; then
+  rm util/inf-ruby.el
+fi
+if [ -e util/ruby-mode.el ]; then
+  rm util/ruby-mode.el
+fi
+EOD
+        end
+      else
+        desc 'install Rinari'
+        task :install do
+        exec <<EOD
+cd #{ELISP}
+git clone https://github.com/eschulte/rinari.git
+cd rinari
+git submodule init
+git submodule update
+rm util/inf-ruby.el
+rm util/ruby-mode.el
+EOD
+        end
+      end
+    end
+
+    namespace :rhtml do
+      desc 'install rhtml-mode'
+      task :install do
+        exec <<EOD
+cd #{ELISP}
+git clone https://github.com/eschulte/rhtml.git
+EOD
+      end
+    end
+
+    namespace :yas_rails do
+      if ( File.exist?( "#{ELISP}/yasnippets-rails/.git" ) )
+        desc 'update yasnippets-rails'
+        task :update do
+          exec <<EOD
+cd #{ELISP}/yasnippets-rails
+git pull
+EOD
+        end
+      else
+        desc 'install yasnippets-rails'
+        task :install do
+          exec <<EOD
+cd #{ELISP}
+git clone https://github.com/eschulte/yasnippets-rails.git
+EOD
+        end
+      end
+    end
+  end
 end
