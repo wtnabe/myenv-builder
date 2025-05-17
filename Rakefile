@@ -1,63 +1,63 @@
-# -*- mode: ruby; encoding: utf-8 -*-
+# -*- mode: ruby -*-
 
-require 'erb'
+require "erb"
 
-require File.dirname( __FILE__ ) + '/lib/dotfiles'
-require File.dirname( __FILE__ ) + '/lib/firefox'
+require File.dirname(__FILE__) + "/lib/dotfiles"
+require File.dirname(__FILE__) + "/lib/firefox"
 
 def win?
   RUBY_PLATFORM !~ /darwin/i and RUBY_PLATFORM =~ /(win|mingw)/i
 end
 
-def which( cmd )
-  suffixes = %w(bat com exe)
+def which(cmd)
+  suffixes = %w[bat com exe]
 
-  ENV['PATH'].split( File::PATH_SEPARATOR ).any? { |path|
+  ENV["PATH"].split(File::PATH_SEPARATOR).any? { |path|
     if win?
       suffixes.each { |s|
-        File.exist?( path + File::SEPARATOR + cmd + '.' + s )
+        File.exist?(path + File::SEPARATOR + cmd + "." + s)
       }
     else
-      File.exist?( path + File::SEPARATOR + cmd )
+      File.exist?(path + File::SEPARATOR + cmd)
     end
   }
 end
 
 def workspaces
-  return %w(job priv)
+  %w[job priv]
 end
 
 def namespaces
-  return %w(dotfiles firefox)
+  %w[dotfiles firefox]
 end
 
 task :default do
   puts "tasks below:"
-  sh 'rake -T', :verbose => false
+  sh "rake -T", verbose: false
 
-  puts <<EOD
-
-Please exec tasks of namespace 'firefox' in profile diretocy.
-For 'dofiles', run anywhere.
-EOD
+  puts <<~EOD
+    
+    Please exec tasks of namespace 'firefox' in profile diretocy.
+    For 'dofiles', run anywhere.
+  EOD
 end
 
 namespaces.each { |n|
   namespace n do
-    utils = Object.const_get( n.capitalize ).instance
+    utils = Object.const_get(n.capitalize).instance
 
     desc "remove symbolic links and generated files"
     task :clean do
       utils.files_for_link.each { |e|
-        path = utils.dest_path( e )
-        if File.symlink?( path )
-          File.unlink( path )
+        path = utils.dest_path(e)
+        if File.symlink?(path)
+          File.unlink(path)
         else
-          FileUtils.rm_rf( path )
+          FileUtils.rm_rf(path)
         end
       }
       utils.files_post_erbed.each { |e|
-        File.unlink( e ) if File.exist?( e )
+        File.unlink(e) if File.exist?(e)
       }
       puts "Symlinks and generated files are cleaned."
     end
@@ -66,7 +66,7 @@ namespaces.each { |n|
       desc "enable config files by symbolic link for #{workspace}"
       task "link_#{workspace}" => [:clean, "generate_#{workspace}", :check] do
         utils.files_for_link.each { |e|
-          utils.link( utils.src_path( e ), utils.dest_path( e ) )
+          utils.link(utils.src_path(e), utils.dest_path(e))
         }
         puts "Symlinks created."
       end
@@ -76,9 +76,9 @@ namespaces.each { |n|
       desc "generate files from template for #{workspace}"
       task "generate_#{workspace}" do
         utils.files_for_erb.each { |e|
-          erb = ERB.new( open( utils.src_path( e ) ).read, nil, '-' )
-          File.open( utils.src_path( utils.erbed_filename( e ) ), 'w' ) { |f|
-            f.write( erb.result( binding ) )
+          erb = ERB.new(File.read(utils.src_path(e)), nil, "-") # rubocop:disable Lint/ErbNewArguments
+          File.open(utils.src_path(utils.erbed_filename(e)), "w") { |f|
+            f.write(erb.result(binding))
             f.flush
             sleep 1
           }
@@ -87,12 +87,12 @@ namespaces.each { |n|
     }
 
     desc "check_link_blocker and check_generated"
-    task :check => [:check_link_blocker, :check_generated] do; end
+    task check: [:check_link_blocker, :check_generated] do; end # rubocop:disable Standard/BlockSingleLineBraces
 
-    desc "check whether actual files or directories exist" 
+    desc "check whether actual files or directories exist"
     task :check_link_blocker do
       exists = utils.files_symlink_blocker
-      if ( exists.size > 0 )
+      if exists.size > 0
         puts "These files or directories that I'll symlink exist."
         puts exists
         abort
@@ -103,8 +103,8 @@ namespaces.each { |n|
 
     desc "check file generated ?"
     task :check_generated do
-      not_exists = utils.files_post_erbed.find_all { |e| !File.exist?( e ) }
-      if ( not_exists.size > 0 )
+      not_exists = utils.files_post_erbed.find_all { |e| !File.exist?(e) }
+      if not_exists.size > 0
         puts "These files that erb should ganerate don't exist."
         puts not_exists
         abort
@@ -112,23 +112,24 @@ namespaces.each { |n|
         puts "Check ok. All generated files are ready."
       end
     end
-
   end # of namespace
 }
 
 namespace :bin do
-  desc 'create link for ~/bin'
+  desc "create link for ~/bin"
   task :link do
-    File.symlink( File.join( File.dirname( __FILE__ ), 'bin' ),
-                  File.join( ENV['HOME'], 'bin' ) )
+    File.symlink(
+      File.join(File.dirname(__FILE__), "bin"),
+      File.join(ENV["HOME"], "bin")
+    )
   end
 end
 
 namespace :elisp do
-  ELISP = File.expand_path( File.dirname( __FILE__ ) + '/dotfiles/elisp' )
+  elisp_dir = File.expand_path(File.dirname(__FILE__) + "/dotfiles/elisp")
 
   desc "byte-compile-directory"
   task :bytecompile do
-    exec "emacs --batch -L #{ELISP} -f batch-byte-compile #{ELISP}/*.el > /dev/null 2>&1"
+    exec "emacs --batch -L #{elisp_dir} -f batch-byte-compile #{ELISP}/*.el > /dev/null 2>&1"
   end
 end
