@@ -1,0 +1,17 @@
+*~
+*.bak
+.DS_Store
+
+/.ruby-lsp
+
+Gemfile.lock
+
+/.bundle
+/vendor
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/pkg/
+/spec/reports/
+/tmp/
