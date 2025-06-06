@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
-
-require 'singleton'
-require 'pathname'
-require 'fileutils'
+require "singleton"
+require "pathname"
+require "fileutils"
 
 class LinkUtils
   include Singleton
@@ -15,9 +13,9 @@ class LinkUtils
   # [Return] Array excluded filenames
   #
   def excludes
-    return Dir.chdir( base ) {
-      %w(. .. .svn .git .hg CVS Rakefile) + files_for_erb +
-      Dir.glob( '*~' ) + Dir.glob( '#*#' ) + Dir.glob( '*.bak' )
+    Dir.chdir(base) {
+      %w[. .. .svn .git .hg CVS Rakefile] + files_for_erb +
+        Dir.glob("*~") + Dir.glob("#*#") + Dir.glob("*.bak")
     }
   end
 
@@ -25,7 +23,7 @@ class LinkUtils
   # [Return] Array erb generated file names
   #
   def files_post_erbed
-    return files_for_erb.map { |e| src_path( erbed_filename( e ) ) }
+    files_for_erb.map { |e| src_path(erbed_filename(e)) }
   end
 
   #
@@ -35,35 +33,35 @@ class LinkUtils
     exists = []
 
     files_for_link.each { |e|
-      path = dest_path( e )
-      if ( File.exist?( path ) and !File.symlink?( path ) )
+      path = dest_path(e)
+      if File.exist?(path) && !File.symlink?(path)
         exists << path
       end
     }
 
-    return exists
+    exists
   end
 
-  def src_path( file )
-    return File.join( base, file )
+  def src_path(file)
+    File.join(base, file)
   end
 
   #
   # [Return] String post erbed filename
   #
-  def erbed_filename( file )
-    return file.sub( /\.erb\z/, '' )
+  def erbed_filename(file)
+    file.sub(/\.erb\z/, "")
   end
 
   #
   # [Param] String src
   # [Param] String dest
   #
-  def link( src, dest )
-    if ( win? )
-      FileUtils.cp_r( src, dest )
+  def link(src, dest)
+    if win?
+      FileUtils.cp_r(src, dest)
     else
-      File.symlink( src, dest )
+      File.symlink(src, dest)
     end
   end
 
@@ -72,6 +70,6 @@ class LinkUtils
   #
   def win?
     # Cygwin supports symlink
-    return /mswin|mingw|bccwin/ =~ RUBY_PLATFORM
+    /mswin|mingw|bccwin/ =~ RUBY_PLATFORM
   end
 end
