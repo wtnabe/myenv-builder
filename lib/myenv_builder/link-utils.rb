@@ -15,6 +15,26 @@ module MyenvBuilder
     end
 
     #
+    # Template Methods
+    #
+
+    def files_for_erb
+      raise NotImplementedError
+    end
+
+    def files_for_link
+      raise NotImplementedError
+    end
+
+    def dest_path
+      raise NotImplementedError
+    end
+
+    def base
+      raise NotImplementedError
+    end
+
+    #
     # [Return] Array excluded filenames
     #
     def excludes

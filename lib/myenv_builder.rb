@@ -2,6 +2,8 @@ require_relative "myenv_builder/version"
 require_relative "myenv_builder/basic_methods"
 require_relative "myenv_builder/dotfiles"
 require_relative "myenv_builder/firefox"
+require_relative "myenv_builder/vscode_config"
+require "roughly-platform"
 require "erb"
 require "rake"
 require "rake/tasklib"
@@ -110,6 +112,22 @@ module MyenvBuilder
         desc "byte-compile-directory"
         task :bytecompile do
           exec "emacs --batch -L #{elisp_dir} -f batch-byte-compile #{elisp_dir}/*.el > /dev/null 2>&1"
+        end
+      end
+
+      namespace :vscode do
+        config = VscodeConfig.new(base_dir: @base_dir)
+
+        if config.already_exist?
+          desc "copy to outside VS Code directory"
+          task :backup do
+            config.collect
+          end
+        end
+
+        desc "create link for VS Code settings"
+        task :symlink do
+          config.symlink
         end
       end
 
