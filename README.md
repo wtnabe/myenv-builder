@@ -33,11 +33,12 @@ basic layout
 
 ```
 ./
+|-- Brewfile    brew bundle file if you use Homebrew
 |-- Gemfile
 |-- Rakefile
 |-- dotfiles/   your dot files
 |-- firefox/    your profile settings
-`-- lib/        Rakefile's libraries
+`-- vscode/     your VS Code settings
 ```
 
 write Rakefile as
