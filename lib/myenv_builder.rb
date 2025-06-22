@@ -3,6 +3,7 @@ require_relative "myenv_builder/basic_methods"
 require_relative "myenv_builder/dotfiles"
 require_relative "myenv_builder/firefox"
 require_relative "myenv_builder/vscode_config"
+require_relative "myenv_builder/brew_bundle"
 require "roughly-platform"
 require "erb"
 require "rake"
@@ -128,6 +129,22 @@ module MyenvBuilder
         desc "create link for VS Code settings"
         task :symlink do
           config.symlink
+        end
+      end
+
+      namespace :brew do
+        bundle = BrewBundle.new(base_dir: @base_dir)
+
+        if bundle.ready?
+          desc "dump all brew bundle"
+          task :dump do
+            bundle.dump
+          end
+
+          desc "install all brew bundle"
+          task :install do
+            bundle.install
+          end
         end
       end
 
